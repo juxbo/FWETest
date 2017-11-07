@@ -11,5 +11,9 @@ export const TASKS: Task[] = [
   new Task('16', 'Waschen', false),
   new Task('17', 'Buegeln', false),
   new Task('18', 'Lernen', false),
+  new Task('18', 'Lernen', false),
+  new Task('18', 'Lernen', false),
+  new Task('18', 'Lernen', false),
+  new Task('18', 'Lernen', false),
   new Task('19', 'Duschen', false)
 ];

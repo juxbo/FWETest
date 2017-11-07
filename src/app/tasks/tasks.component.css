@@ -1,0 +1,11 @@
+.bd-content > h2:not(:first-child) {
+  margin-top: 2rem;
+}
+
+.full-width-div {
+  width: 100vw;
+  margin-left: calc(-50vw + 50% - 8px);
+  position: relative;
+  padding-left: 2em;
+  padding-right: 1em;
+}
