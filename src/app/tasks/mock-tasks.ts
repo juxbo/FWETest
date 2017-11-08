@@ -1,20 +1,34 @@
 import {Task} from '../task';
 
-// id: string, name: string, endTime: Date, startTime: Date, created_on: Date, done: boolean,
+// _id: string, title: string, endTime: Date, startTime: Date, created_on: Date, done: boolean,
 //   description?: string, location?: string, edit: boolean = false
 export const TASKS: Task[] = [
-  {id: '16', name: 'Testen', startTime: new Date(), endTime: new Date(), created_on: new Date(), done: false},
   {
-    id: '17',
-    name: 'Fixen',
-    startTime: new Date(),
-    endTime: new Date(),
-    created_on: new Date(),
+    _id: '16',
+    title: 'Testen',
+    startTime: new Date().toISOString().slice(0, 16),
+    endTime: new Date().toISOString().slice(0, 16),
+    created_on: new Date().toISOString().slice(0, 16),
+    done: false
+  },
+  {
+    _id: '17',
+    title: 'Fixen',
+    startTime: new Date().toISOString().slice(0, 16),
+    endTime: new Date().toISOString().slice(0, 16),
+    created_on: new Date().toISOString().slice(0, 16),
     done: false,
     description: 'Dies ist eine Beschreibung.',
     location: 'Ort 1'
   },
-  {id: '18', name: 'Weinen', startTime: new Date(), endTime: new Date(), created_on: new Date(), done: false},
+  {
+    _id: '18',
+    title: 'Weinen',
+    startTime: new Date().toISOString().slice(0, 16),
+    endTime: new Date().toISOString().slice(0, 16),
+    created_on: new Date().toISOString().slice(0, 16),
+    done: false
+  },
   // new Task('17', 'Fixen', new Date(), new Date(), new Date(), false),
   // new Task('18', 'Weinen', new Date(), new Date(), new Date(), false),
   // new Task('19', 'Fixen', new Date(), new Date(), new Date(), false),

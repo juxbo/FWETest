@@ -13,3 +13,7 @@
 textarea {
   max-height: 20em;
 }
+
+.custom-control-input:disabled ~ .custom-control-indicator {
+  background-color: #ddd;
+}

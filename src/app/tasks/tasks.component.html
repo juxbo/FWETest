@@ -1,92 +1,106 @@
 <div class="col-12 bd-content">
-  <h2>New Task</h2>
+  <h2>Task</h2>
   <div class="form-inline mb-2">
-    <label class="mr-2">Add new task:</label>
-    <!-- TODO: Transfer title from input to modal. Make modal create new task on click of save. -->
-    <input class="form-control mr-sm-2" [(ngModel)]="newTask.name">
-    <label for="recipient-name" class="form-control-label">Recipient: {{newTask.name}}</label>
-    <!--<a class="btn btn-primary">Create</a>-->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Create</button>
+    <button type="button" class="btn btn-primary mr-2" data-toggle="modal" data-target="#exampleModal">Create new
+    </button>
+    <!--TODO-->
+    <button type="button" class="btn btn-primary mr-2" (click)="onDownloadAllCsv()">Export all to CSV</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Refresh</button>
   </div>
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+          <h5 class="modal-title" id="exampleModalLabel">New task</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-          <form>
-            <div class="form-group">
-              <label for="recipient-name" class="form-control-label">Recipient:</label>
-              <input type="text" class="form-control" id="recipient-name" [(ngModel)]="newTask.name">
-            </div>
-            <div class="form-group">
-              <label for="message-text" class="form-control-label">Message:</label>
-              <textarea class="form-control" id="message-text"></textarea>
-            </div>
-          </form>
+          <div class="form-group">
+            <label for="recipient-name" class="form-control-label">Name:</label>
+            <input type="text" class="form-control" id="recipient-name" [(ngModel)]="newTask.title" maxlength="50">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="form-control-label">Description:</label>
+            <textarea class="form-control" id="message-text" [(ngModel)]="newTask.description"
+                      maxlength="255"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="form-control-label">Start:</label>
+            <input type="dateTime-local" [(ngModel)]="newTask.startTime" placeholder="startTime" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="form-control-label">End:</label>
+            <input type="dateTime-local" [(ngModel)]="newTask.endTime" placeholder="endTime" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="form-control-label">Location:</label>
+            <!-- TODO: FIX ERRORS IN CONSOLE -->
+            <input [(ngModel)]="newTask.location" class="form-control" maxlength="50">
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Send message</button>
+          <button type="button" class="btn btn-primary" (click)="onAddTask(newTask)" data-dismiss="modal">Save task</button>
         </div>
       </div>
     </div>
   </div>
   <h2>All Tasks</h2>
-  <!--<div class="row">-->
+
   <!-- TODO: FIX CARD-COLUMN annoying moving of cards when pressing edit -->
+  <p *ngIf="tasks.length<1">No tasks yet.</p>
+
+  <!--TODO: Somehow this doesn't actually show when loading-->
+  <p *ngIf="loadingTasks">Loading tasks...</p>
+
   <div class="full-width-div card-columns">
     <div *ngFor="let task of tasks">
       <div class="card mb-3">
         <div class="card-body">
-          <h4 class="card-title">{{ task.name }}</h4>
+          <h4 class="card-title">{{ task.title }}</h4>
           <p class="card-text" *ngIf="task.description">{{task.description}}</p>
-          <!--<div class="form-group row">-->
-          <!--<label class="col-6 col-form-label">Id:</label>-->
-          <!--<div class="col-6">-->
-          <!--<input *ngIf="task.edit" [(ngModel)]="task.id" placeholder="id" class="form-control">-->
-          <!--<label class="col-form-label" *ngIf="!task.edit">{{task.id}}</label>-->
-          <!--</div>-->
-          <!--</div>-->
           <div class="form-group row" *ngIf="task.edit">
             <label class="col-6 col-form-label">Name:</label>
             <div class="col-6">
               <!-- TODO: Min Length -->
-              <input *ngIf="task.edit" [(ngModel)]="task.name" placeholder="name" class="form-control" maxlength="50">
-              <label class="col-form-label" *ngIf="!task.edit">{{task.name}}</label>
+              <input *ngIf="task.edit" [(ngModel)]="task.title" placeholder="name" class="form-control" maxlength="50">
+              <label class="col-form-label" *ngIf="!task.edit">{{task.title}}</label>
             </div>
           </div>
           <div *ngIf="task.edit" class="form-group row">
             <label class="col-6 col-form-label">Description:</label>
             <div class="col-6">
-              <textarea *ngIf="task.edit" [(ngModel)]="task.description" placeholder="desc" class="form-control" maxlength="255"></textarea>
+              <textarea *ngIf="task.edit" [(ngModel)]="task.description" placeholder="desc" class="form-control"
+                        maxlength="255"></textarea>
               <label class="col-form-label" *ngIf="!task.edit">{{task.description}}</label>
             </div>
           </div>
           <div class="form-group row">
             <label class="col-6 col-form-label">Start:</label>
             <div class="col-6">
-              <input *ngIf="task.edit" type="datetime-local" [(ngModel)]="task.startTime" placeholder="startTime" class="form-control">
-              <label class="col-form-label" *ngIf="!task.edit">{{task.startTime}}</label>
+              <input *ngIf="task.edit" type="dateTime-local" [(ngModel)]="task.startTime" placeholder="startTime"
+                     class="form-control">
+              <label class="col-form-label" *ngIf="!task.edit">{{task.startTime | date : "medium"}}</label>
             </div>
           </div>
           <div class="form-group row">
             <label class="col-6 col-form-label">Ende:</label>
             <div class="col-6">
               <!-- TODO: Date Picker -->
-              <input *ngIf="task.edit" type="datetime-local" [(ngModel)]="task.endTime" placeholder="endTime" class="form-control">
-              <label class="col-form-label" *ngIf="!task.edit">{{task.endTime}}</label>
+              <input *ngIf="task.edit" type="dateTime-local" [(ngModel)]="task.endTime" placeholder="endTime"
+                     class="form-control">
+              <label class="col-form-label" *ngIf="!task.edit">{{task.endTime | date : "medium"}}</label>
             </div>
           </div>
-          <div class="form-group row" *ngIf="task.location">
+          <div class="form-group row" *ngIf="task.edit|| task.location">
             <label class="col-6 col-form-label">Ort:</label>
             <div class="col-6">
-              <input *ngIf="task.edit" [(ngModel)]="task.location" placeholder="location" class="form-control" maxlength="50">
-              <label class="col-form-label" *ngIf="!  task.edit">{{task.location}}</label>
+              <input *ngIf="task.edit" [(ngModel)]="task.location" placeholder="location" class="form-control"
+                     maxlength="50">
+              <label class="col-form-label" *ngIf="!task.edit">{{task.location}}</label>
             </div>
           </div>
           <div class="form-group row">
@@ -100,17 +114,21 @@
                     <span class="custom-control-indicator"></span>
                     <span class="custom-control-description">{{task.done}}</span>
                   </label>
-                  <!--<input class="form-check-input" type="checkbox">{{task.done}}-->
                 </label>
               </div>
-              <!--<label class="form-label" *ngIf="!task.edit">{{task.done}}</label>-->
             </div>
           </div>
 
-          <a (click)="toggleEdit(task)" class="btn btn-primary">Edit</a>
-          <a class="btn btn-primary">Delete</a>
+          <button *ngIf="!task.edit" (click)="toggleEdit(task)" class="btn btn-primary btn-sm">Edit</button>
+          <button *ngIf="task.edit" (click)="toggleEdit(task); onUpdateTask(task)" class="btn btn-primary btn-sm">Done
+          </button>
+          <!--TODO-->
+          <button type="button" class="btn btn-primary btn-sm" (click)="onDownloadCsv(task)">Export to CSV</button>
+          <button type="button" class="btn btn-primary btn-sm" (click)="onCheckWeather(task)">Show Weather</button>
+          <button type="button" class="btn btn-primary btn-sm" (click)="onRemoveTask(task)">Delete</button>
+
           <p class="card-text">
-            <small class="text-muted">Created {{task.created_on}}</small>
+            <small class="text-muted">Created on {{task.created_on | date : "medium"}}</small>
           </p>
         </div>
       </div>
