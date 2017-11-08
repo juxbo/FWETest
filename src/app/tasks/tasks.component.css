@@ -9,3 +9,7 @@
   padding-left: 2em;
   padding-right: 1em;
 }
+
+textarea {
+  max-height: 20em;
+}
