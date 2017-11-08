@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Task} from '../task';
-import { TASKS } from './mock-tasks';
+import {TASKS} from './mock-tasks';
 
 @Component({
   selector: 'app-tasks',
@@ -10,11 +10,17 @@ import { TASKS } from './mock-tasks';
 export class TasksComponent implements OnInit {
 
   tasks: Task[] = TASKS;
+  newTask: Task;
 
   constructor() {
   }
 
   ngOnInit() {
+    this.newTask = new Task();
+  }
+
+  toggleEdit(t: Task) {
+    t.edit = !t.edit;
   }
 
 }

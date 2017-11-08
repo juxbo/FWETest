@@ -1,3 +1,5 @@
+import {ITask} from './itask';
+
 export class Task {
   id: string;
   name: string;
@@ -5,27 +7,31 @@ export class Task {
   startTime: Date;
   created_on: Date;
   done: boolean;
-  description: string;
-  location: string;
+  description?: string;
+  location?: string;
 
-  edit: boolean;
+  edit?: boolean;
 
+  // constructor();
+  // constructor(data?: ITask) {
+  //
+  // }
 
-  constructor(id: string, name: string, endTime: Date, startTime: Date, created_on: Date, done: boolean,
-              description?: string, location?: string, edit: boolean = false) {
-    this.id = id;
-    this.name = name;
-    this.endTime = endTime;
-    this.startTime = startTime;
-    this.created_on = created_on;
-    this.done = done;
-    this.description = description;
-    this.location = location;
-    this.edit = edit;
-  }
+  // constructor(data?: any) {
+  //   this.id=data.id;
+  // }
 
-  toggleEdit() {
-    this.edit = !this.edit;
-  }
+  // constructor(id: string, name: string, endTime: Date, startTime: Date, created_on: Date, done: boolean,
+  //             description?: string, location?: string, edit: boolean = false) {
+  //   this.id = id;
+  //   this.name = name;
+  //   this.endTime = endTime;
+  //   this.startTime = startTime;
+  //   this.created_on = created_on;
+  //   this.done = done;
+  //   this.description = description;
+  //   this.location = location;
+  //   this.edit = edit;
+  // }
 
 }
