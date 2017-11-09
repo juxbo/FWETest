@@ -34,7 +34,7 @@ export class ApiService {
       .catch(this.handleError);
   }
 
-  public getTaskById(taskId: number): Observable<Task> {
+  public getTaskById(taskId: string): Observable<Task> {
     return this.http
       .get(API_URL + '/tasks/' + taskId)
       .map(response => {
@@ -44,7 +44,7 @@ export class ApiService {
   }
 
   // TODO: Put observable of json type
-  public getTaskWeatherById(taskId: number): Observable<any> {
+  public getTaskWeatherById(taskId: string): Observable<any> {
     return this.http
       .get(API_URL + '/tasks/' + taskId + '/weather')
       .map(response => {
@@ -62,7 +62,7 @@ export class ApiService {
       .catch(this.handleError);
   }
 
-  public getTaskCsvById(taskId: number): Observable<any> {
+  public getTaskCsvById(taskId: string): Observable<any> {
     return this.http
       .get(API_URL + '/tasks/' + taskId + '/csv', { responseType: ResponseContentType.Blob })
       .map(response => {
@@ -80,7 +80,7 @@ export class ApiService {
       .catch(this.handleError);
   }
 
-  public deleteTaskById(taskId: number): Observable<null> {
+  public deleteTaskById(taskId: string): Observable<null> {
     return this.http
       .delete(API_URL + '/tasks/' + taskId)
       .map(response => null)

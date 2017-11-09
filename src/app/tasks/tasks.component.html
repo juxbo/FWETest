@@ -48,6 +48,7 @@
       </div>
     </div>
   </div>
+
   <h2>All Tasks</h2>
 
   <!-- TODO: FIX CARD-COLUMN annoying moving of cards when pressing edit -->
@@ -56,6 +57,7 @@
   <!--TODO: Somehow this doesn't actually show when loading-->
   <p *ngIf="loadingTasks">Loading tasks...</p>
 
+  <!--TODO: Validation for new and edit task-->
   <div class="full-width-div card-columns">
     <div *ngFor="let task of tasks">
       <div class="card mb-3">
@@ -87,7 +89,7 @@
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-6 col-form-label">Ende:</label>
+            <label class="col-6 col-form-label">End:</label>
             <div class="col-6">
               <!-- TODO: Date Picker -->
               <input *ngIf="task.edit" type="dateTime-local" [(ngModel)]="task.endTime" placeholder="endTime"
@@ -96,7 +98,7 @@
             </div>
           </div>
           <div class="form-group row" *ngIf="task.edit|| task.location">
-            <label class="col-6 col-form-label">Ort:</label>
+            <label class="col-6 col-form-label">Location:</label>
             <div class="col-6">
               <input *ngIf="task.edit" [(ngModel)]="task.location" placeholder="location" class="form-control"
                      maxlength="50">
@@ -124,7 +126,9 @@
           </button>
           <!--TODO-->
           <button type="button" class="btn btn-primary btn-sm" (click)="onDownloadCsv(task)">Export to CSV</button>
-          <button type="button" class="btn btn-primary btn-sm" (click)="onCheckWeather(task)">Show Weather</button>
+
+          <app-weather [task]="task"></app-weather>
+
           <button type="button" class="btn btn-primary btn-sm" (click)="onRemoveTask(task)">Delete</button>
 
           <p class="card-text">

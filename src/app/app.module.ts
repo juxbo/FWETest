@@ -8,16 +8,20 @@ import {TasksComponent} from './tasks/tasks.component';
 
 import { TaskDataService } from './task.data.service';
 import { ApiService } from './api.service';
+import { ChartsModule } from 'ng2-charts/ng2-charts';
+import { WeatherComponent } from './weather/weather.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TasksComponent
+    TasksComponent,
+    WeatherComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    ChartsModule
   ],
   providers: [TaskDataService, ApiService],
   bootstrap: [AppComponent]

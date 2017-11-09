@@ -18,7 +18,7 @@ export class TaskDataService {
   }
 
   // Simulate DELETE /tasks/:_id
-  deleteTaskById(taskId: number): Observable<Task> {
+  deleteTaskById(taskId: string): Observable<Task> {
     return this.api.deleteTaskById(taskId);
   }
 
@@ -33,14 +33,14 @@ export class TaskDataService {
   }
 
   // Simulate GET /tasks/:_id
-  getTaskById(taskId: number): Observable<Task> {
+  getTaskById(taskId: string): Observable<Task> {
     return this.api.getTaskById(taskId);
   }
 
-  getTaskWeatherById(taskId: number): Observable<any> {
+  getTaskWeatherById(taskId: string): Observable<any> {
     return this.api.getTaskWeatherById(taskId);
   }
-  getTaskCsvById(taskId: number): Observable<any> {
+  getTaskCsvById(taskId: string): Observable<any> {
     return this.api.getTaskCsvById(taskId);
   }
   getAllTaskCsv(): Observable<any> {

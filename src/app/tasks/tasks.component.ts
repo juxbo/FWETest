@@ -1,20 +1,24 @@
 import {Component, OnInit} from '@angular/core';
 import {TaskDataService} from '../task.data.service';
 import {Task} from '../task';
-import {TASKS} from './mock-tasks';
+// import {TASKS} from './mock-tasks';
 import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.css'],
-  providers: [TaskDataService]
+  providers: [TaskDataService],
 })
 export class TasksComponent implements OnInit {
 
   tasks: Task[];
   newTask: Task;
   loadingTasks = true;
+
+  // TODO: initialize modal only after weather and then don't store it here
+  weather: any;
+  location: string;
 
   constructor(private taskDataService: TaskDataService) {
   }
@@ -39,17 +43,6 @@ export class TasksComponent implements OnInit {
 
   private resetNewTask() {
     this.newTask = new Task({startTime: new Date(), endTime: new Date()});
-  }
-
-  onCheckWeather(task) {
-    this.taskDataService
-      .getTaskWeatherById(task._id)
-      .subscribe(
-        (weather) => {
-          // TODO: Do stuff with weather json
-          console.log(weather);
-        }
-      );
   }
 
   onDownloadAllCsv() {
