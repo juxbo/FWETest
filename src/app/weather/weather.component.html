@@ -10,6 +10,9 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-12">
+            <div *ngIf="locationInvalid" class="alert alert-danger">
+              <strong>Error!</strong> Location is not valid.
+            </div>
             <div style="display: block;">
               <canvas baseChart
                       [datasets]="lineChartData"
@@ -22,27 +25,32 @@
                       (chartClick)="chartClicked($event)"></canvas>
             </div>
           </div>
-          <!--<div class="col-md-6" style="margin-bottom: 10px">-->
-            <!--<table class="table table-responsive table-condensed">-->
-              <!--<tr>-->
-                <!--<th *ngFor="let label of lineChartLabels">{{label}}</th>-->
-              <!--</tr>-->
-              <!--<tr *ngFor="let d of lineChartData">-->
-                <!--<td *ngFor="let label of lineChartLabels; let j=index">{{d && d.data[j]}}</td>-->
-              <!--</tr>-->
-            <!--</table>-->
-            <!--<button (click)="randomize()">CLICK</button>-->
-          <!--</div>-->
+          <div class="col-12 mb-4 mt-4">
+            <table class="table table-responsive table-hover table-condensed">
+              <thead class="thead-dark">
+              <tr>
+                <th class="tdwide">Series</th>
+                <th *ngFor="let label of lineChartLabels">{{label | date: "short"}}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let d of lineChartData">
+                <td class="bg-primary">{{d.label}}</td>
+                <td *ngFor="let label of lineChartLabels; let j=index">{{d && d.data[j]}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="onAddTask(newTask)" data-dismiss="modal">Save task</button>
+        <!--<button type="button" class="btn btn-primary" (click)="onAddTask(newTask)" data-dismiss="modal">Save task</button>-->
       </div>
     </div>
   </div>
 </div>
 
-<button type="button" class="btn btn-primary btn-sm" (click)="onModalOpen()" data-toggle="modal"
-        attr.data-target="#weatherModal{{task._id}}" *ngIf="!task.edit && task.location">Weather
+<button type="button" class="btn btn-primary btn-sm" (click)="onModalOpen('#weatherModal'+task._id)"
+        attr.data-target="#weatherModal{{task._id}}" data-toggle="modal" *ngIf="!task.edit && task.location">Weather
 </button>

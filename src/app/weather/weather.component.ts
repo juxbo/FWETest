@@ -1,6 +1,6 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {TaskDataService} from '../task.data.service';
-import {Task} from "../task";
+import {Task} from '../task';
 
 @Component({
   selector: 'app-weather',
@@ -12,16 +12,11 @@ export class WeatherComponent implements OnInit {
 
   @Input() task: Task;
 
-  public lineChartLegend: boolean = true;
-  public lineChartType: string = 'line';
-  // lineChart
+  public locationInvalid = false;
+  public lineChartLegend = true;
+  public lineChartType = 'line';
   public lineChartData: Array<any>;
-  //   = [
-  //   {data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A'},
-  //   {data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B'},
-  //   {data: [18, 48, 77, 9, 100, 27, 40], label: 'Series C'}
-  // ];
-  public lineChartLabels: Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  public lineChartLabels: Array<any> = [];
   public lineChartOptions: any = {
     responsive: true
   };
@@ -42,13 +37,21 @@ export class WeatherComponent implements OnInit {
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(77,83,96,1)'
     },
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
+    { // red
+      backgroundColor: 'rgba(255,0,0,0.2)',
+      borderColor: 'rgba(255,0,0,1)',
+      pointBackgroundColor: 'rgba(255,0,0,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+      pointHoverBorderColor: 'rgba(255,0,0,0.8)'
+    },
+    { // blue
+      backgroundColor: 'rgba(0,0,255,0.2)',
+      borderColor: 'rgba(0,0,255,1)',
+      pointBackgroundColor: 'rgba(0,0,255,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(0,0,255,0.8)'
     }
   ];
 
@@ -56,39 +59,66 @@ export class WeatherComponent implements OnInit {
   }
 
   ngOnInit() {
-    // TODO: Remove this once onModalOpen works correctly (init is whenever a task is loaded which is too much)
-    // this.onModalOpen();
+    this.lineChartData = [
+      {data: [65], label: 'Temp'},
+      {data: [65], label: 'Hum', hidden: true},
+      {data: [65], label: 'Wind'},
+      {data: [65], label: 'Rain'}
+    ];
   }
 
-  onModalOpen() {
+  onModalOpen(id: string) {
     // TODO: Implement small global cache (daily)
+    this.locationInvalid = false;
     this.taskDataService
       .getTaskWeatherById(this.task._id)
       .subscribe(
         (weather) => {
-          console.log(weather['list']);
+          if (weather['list'] == null) {
+            this.locationInvalid = true;
+            return;
+          }
 
+          const temps: any[] = new Array();
+          const wind: any[] = new Array();
+          const humidity: any[] = new Array();
+          const rain: any[] = new Array();
+          const lbls: string[] = new Array();
 
-          //TODO: JSON to array that chart can handle
-          this.lineChartData = [{
-            label: 'Test',
-            data: weather['list']
-          }];
+          for (let _i = 0; _i < weather['list'].length; _i++) {
+            temps.push((weather['list'][_i].main.temp - 273).toFixed(2));
+            humidity.push((weather['list'][_i].main.humidity));
+            wind.push((weather['list'][_i].wind.speed));
+            lbls.push(weather['list'][_i].dt_txt);
+            if (weather['list'][_i].rain['3h'] == null) {
+              rain.push(0);
+            } else {
+              rain.push(weather['list'][_i].rain['3h'].toFixed(4));
+            }
+          }
+
+          this.lineChartLabels.length = 0;
+          this.lineChartLabels.length = lbls.length;
+
+          // XXX: Unfortunately labels can't be updated with chart.js so this will not show any labels even though it should.
+          this.lineChartLabels = lbls;
+          console.log(this.lineChartLabels);
+          this.lineChartData = [
+            {data: temps, label: 'Temperature °C'},
+            {data: humidity, label: 'Humidity %'},
+            {data: wind, label: 'Windspeed m/s'},
+            {data: rain, label: 'Rain last 3h mm'}
+          ];
+
           console.log(this.lineChartData);
-          // TODO: Force update chart
+        }, err => {
+          this.locationInvalid = true;
         }
       );
   }
 
-  public randomize(): void {
-    let _lineChartData: Array<any> = new Array(this.lineChartData.length);
-    for (let i = 0; i < this.lineChartData.length; i++) {
-      _lineChartData[i] = {data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label};
-      for (let j = 0; j < this.lineChartData[i].data.length; j++) {
-        _lineChartData[i].data[j] = Math.floor((Math.random() * 100) + 1);
-      }
-    }
-    this.lineChartData = _lineChartData;
+  public randomize(id: string): void {
+    this.onModalOpen(id);
   }
 
   // events
