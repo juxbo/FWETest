@@ -5,7 +5,7 @@
     </button>
     <!--TODO-->
     <button type="button" class="btn btn-primary mr-2" (click)="onDownloadAllCsv()">Export all to CSV</button>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Refresh</button>
+    <!--TODO: Instead of being able to set start and end times just add a task and then allow the user to start it and stuff-->
   </div>
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
        aria-hidden="true">
@@ -27,14 +27,14 @@
             <textarea class="form-control" id="message-text" [(ngModel)]="newTask.description"
                       maxlength="255"></textarea>
           </div>
-          <div class="form-group">
-            <label for="message-text" class="form-control-label">Start:</label>
-            <input type="dateTime-local" [(ngModel)]="newTask.startTime" placeholder="startTime" class="form-control">
-          </div>
-          <div class="form-group">
-            <label for="message-text" class="form-control-label">End:</label>
-            <input type="dateTime-local" [(ngModel)]="newTask.endTime" placeholder="endTime" class="form-control">
-          </div>
+          <!--<div class="form-group">-->
+          <!--<label for="message-text" class="form-control-label">Start:</label>-->
+          <!--<input type="dateTime-local" [(ngModel)]="newTask.startTime" placeholder="startTime" class="form-control">-->
+          <!--</div>-->
+          <!--<div class="form-group">-->
+          <!--<label for="message-text" class="form-control-label">End:</label>-->
+          <!--<input type="dateTime-local" [(ngModel)]="newTask.endTime" placeholder="endTime" class="form-control">-->
+          <!--</div>-->
           <div class="form-group">
             <label for="message-text" class="form-control-label">Location:</label>
             <!-- TODO: FIX ERRORS IN CONSOLE -->
@@ -43,26 +43,25 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" (click)="onAddTask(newTask)" data-dismiss="modal">Save task</button>
+          <button type="button" class="btn btn-primary" (click)="onAddTask(newTask)" data-dismiss="modal">Save task
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <h2>All Tasks</h2>
-
-  <!-- TODO: FIX CARD-COLUMN annoying moving of cards when pressing edit -->
-  <p *ngIf="tasks.length<1">No tasks yet.</p>
-
-  <!--TODO: Somehow this doesn't actually show when loading-->
+  <p *ngIf="!loadingTasks && tasks.length<1">No tasks yet.</p>
   <p *ngIf="loadingTasks">Loading tasks...</p>
 
   <!--TODO: Validation for new and edit task-->
+  <!-- TODO: FIX CARD-COLUMN annoying moving of cards when pressing edit -->
   <div class="full-width-div card-columns">
     <div *ngFor="let task of tasks">
-      <div class="card mb-3">
+      <div class="card mb-3" ngClass="{{task.edit ? 'editCard': ''}}">
         <div class="card-body">
-          <h4 class="card-title">{{ task.title }}</h4>
+          <h4 class="card-title">{{ task.title }} <span *ngIf="task.elapsed>0">{{this.secToDate(task.elapsed) | date:'HH:mm:ss'}}</span>
+          </h4>
           <p class="card-text" *ngIf="task.description">{{task.description}}</p>
           <div class="form-group row" *ngIf="task.edit">
             <label class="col-6 col-form-label">Name:</label>
@@ -80,7 +79,7 @@
               <label class="col-form-label" *ngIf="!task.edit">{{task.description}}</label>
             </div>
           </div>
-          <div class="form-group row">
+          <div class="form-group row" *ngIf="task.startTime">
             <label class="col-6 col-form-label">Start:</label>
             <div class="col-6">
               <input *ngIf="task.edit" type="dateTime-local" [(ngModel)]="task.startTime" placeholder="startTime"
@@ -88,7 +87,7 @@
               <label class="col-form-label" *ngIf="!task.edit">{{task.startTime | date : "medium"}}</label>
             </div>
           </div>
-          <div class="form-group row">
+          <div class="form-group row" *ngIf="task.endTime">
             <label class="col-6 col-form-label">End:</label>
             <div class="col-6">
               <!-- TODO: Date Picker -->
@@ -121,19 +120,30 @@
             </div>
           </div>
 
-          <button *ngIf="!task.edit" (click)="toggleEdit(task)" class="btn btn-primary btn-sm">Edit</button>
-          <button *ngIf="task.edit" (click)="toggleEdit(task); onUpdateTask(task)" class="btn btn-primary btn-sm">Done
+          <button *ngIf="!task.edit && (!task.startTime && !task.endTime)" (click)="startTask(task)"
+                  class="btn btn-primary btn-sm">Start
           </button>
-          <!--TODO-->
-          <button type="button" class="btn btn-primary btn-sm" (click)="onDownloadCsv(task)">Export to CSV</button>
+          <button *ngIf="!task.edit && (task.startTime && !task.endTime)" (click)="endTask(task)"
+                  class="btn btn-primary btn-sm">End
+          </button>
 
-          <app-weather [task]="task"></app-weather>
+          <div class="btn-group" data-toggle="buttons">
+            <button *ngIf="!task.edit" (click)="toggleEdit(task)" class="btn btn-primary btn-sm">Edit</button>
+            <button *ngIf="task.edit" (click)="toggleEdit(task); onUpdateTask(task)" class="btn btn-primary btn-sm">
+              Done
+            </button>
 
-          <button type="button" class="btn btn-primary btn-sm" (click)="onRemoveTask(task)">Delete</button>
+            <button *ngIf="!task.edit" type="button" class="btn btn-primary btn-sm" (click)="onDownloadCsv(task)">
+              Export
+            </button>
 
-          <p class="card-text">
-            <small class="text-muted">Created on {{task.created_on | date : "medium"}}</small>
-          </p>
+            <app-weather [task]="task"></app-weather>
+
+            <button type="button" class="btn btn-primary btn-sm" (click)="onRemoveTask(task)">Delete</button>
+          </div>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">Created on {{task.created_on | date : "medium"}}</small>
         </div>
       </div>
     </div>

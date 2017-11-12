@@ -6,13 +6,15 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
+import {ApiService} from './api.abstract';
 
 const API_URL = environment.apiUrl;
 
 @Injectable()
-export class ApiService {
+export class ApiHttpService extends ApiService {
 
-  constructor(private http: Http) {
+  constructor(http: Http) {
+    super(http);
   }
 
   public getAllTasks(): Observable<Task[]> {
@@ -87,7 +89,7 @@ export class ApiService {
       .catch(this.handleError);
   }
 
-  private handleError(error: Response | any) {
+  handleError(error: Response | any) {
     console.error('ApiService::handleError', error);
     return Observable.throw(error);
   }

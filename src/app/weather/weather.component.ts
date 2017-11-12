@@ -57,7 +57,7 @@ export class WeatherComponent implements OnInit {
 
   ngOnInit() {
     // TODO: Remove this once onModalOpen works correctly (init is whenever a task is loaded which is too much)
-    this.onModalOpen();
+    // this.onModalOpen();
   }
 
   onModalOpen() {

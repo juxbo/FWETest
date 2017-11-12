@@ -43,5 +43,6 @@
   </div>
 </div>
 
-<!--TODO: Only open when location not empty-->
-<button type="button" class="btn btn-primary btn-sm" (click)="onModalOpen()" data-toggle="modal" attr.data-target="#weatherModal{{task._id}}" *ngIf="task.location">Show Weather</button>
+<button type="button" class="btn btn-primary btn-sm" (click)="onModalOpen()" data-toggle="modal"
+        attr.data-target="#weatherModal{{task._id}}" *ngIf="!task.edit && task.location">Weather
+</button>

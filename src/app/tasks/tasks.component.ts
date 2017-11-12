@@ -1,8 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {TaskDataService} from '../task.data.service';
 import {Task} from '../task';
-// import {TASKS} from './mock-tasks';
+import {TASKS} from './mock-tasks';
 import * as FileSaver from 'file-saver';
+import 'rxjs/add/operator/takeUntil';
+import 'rxjs/add/operator/timeout';
+import {ApiMockService} from '../api.mock.service';
 
 @Component({
   selector: 'app-tasks',
@@ -24,25 +27,41 @@ export class TasksComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.tasks = new Array<Task>();
     this.loadingTasks = true;
     console.log(this.loadingTasks);
-    this.newTask = new Task({startTime: new Date(), endTime: new Date()});
+    this.newTask = new Task();
     this.taskDataService
       .getAllTasks()
+      .timeout(5000)
       .subscribe(
         (tasks) => {
-          this.tasks = tasks;
+          if (tasks != null) {
+            this.tasks = tasks;
+          }
           this.loadingTasks = false;
+        }, (err) => {
+          alert('Connection to task server timed out. Running mock implementation instead.');
+          console.log(err);
+          this.taskDataService = new TaskDataService(new ApiMockService());
+          this.taskDataService.getAllTasks().subscribe((mocktasks) => {
+            if (mocktasks != null) {
+              this.tasks = mocktasks;
+            }
+            this.loadingTasks = false;
+          });
         }
       );
   }
 
-  toggleEdit(t: Task) {
-    t.edit = !t.edit;
+  secToDate(sec: number): Date {
+    const d = new Date(1970, 0, 1);
+    d.setSeconds(sec);
+    return d;
   }
 
-  private resetNewTask() {
-    this.newTask = new Task({startTime: new Date(), endTime: new Date()});
+  toggleEdit(t: Task) {
+    t.edit = !t.edit;
   }
 
   onDownloadAllCsv() {
@@ -51,7 +70,7 @@ export class TasksComponent implements OnInit {
       .subscribe(
         (res) => {
           const filename = 'tasks.csv';
-          const blob = new Blob([res.blob()], { type: 'application/csv' })
+          const blob = new Blob([res.blob()], {type: 'application/csv'});
           FileSaver.saveAs(blob, filename);
         }
       );
@@ -63,10 +82,36 @@ export class TasksComponent implements OnInit {
       .subscribe(
         (res) => {
           const filename = 'task_' + task._id + '.csv';
-          const blob = new Blob([res.blob()], { type: 'application/csv' })
+          const blob = new Blob([res.blob()], {type: 'application/csv'});
           FileSaver.saveAs(blob, filename);
         }
       );
+  }
+
+  onUpdateTask(task) {
+    if (task.startTime == null) {
+      task.endTimer();
+    }
+    this.taskDataService
+      .updateTask(task)
+      .subscribe(
+        (updatedTask) => {
+          task = updatedTask;
+        }
+      );
+  }
+
+  private startTask(t: Task) {
+    t.startTime = new Date().toISOString().slice(0, 16);
+    t.startTimer();
+    this.onUpdateTask(t);
+  }
+
+  private endTask(t: Task) {
+    t.endTime = new Date().toISOString().slice(0, 16);
+    t.done = true;
+    t.endTimer();
+    this.onUpdateTask(t);
   }
 
   onAddTask(task) {
@@ -80,14 +125,8 @@ export class TasksComponent implements OnInit {
     this.resetNewTask();
   }
 
-  onUpdateTask(task) {
-    this.taskDataService
-      .updateTask(task)
-      .subscribe(
-        (updatedTask) => {
-          task = updatedTask;
-        }
-      );
+  private resetNewTask() {
+    this.newTask = new Task();
   }
 
   onRemoveTask(task) {

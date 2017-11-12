@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Task } from './task';
-import { ApiService } from './api.service';
+import {ApiService} from './api.abstract';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/delay';
+import {ApiHttpService} from './api.service';
 
 @Injectable()
 export class TaskDataService {
 
-  constructor(
-    private api: ApiService
+  constructor(private api: ApiHttpService
   ) {
   }
 
